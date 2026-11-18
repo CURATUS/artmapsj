@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import { getMapData, categories } from '../lib/artworks';
+import { tiles } from '../data/site';
+
+const items = await getMapData();
+
+// Only show category toggles for categories that actually have entries.
+const present = Object.entries(categories)
+  .map(([key, c]) => ({ key, ...c, count: items.filter((i) => i.category === key).length }))
+  .filter((c) => c.count > 0);
+
+const config = {
+  categories,
+  tiles,
+};
+---
+
+<Base bodyClass="map-page">
+  <Fragment slot="header">
+    <input id="search" type="search" placeholder="Search by title, artist, sponsor..." aria-label="Search artworks" />
+    <button id="locate-btn" class="btn" type="button">📍<span class="label"> Near Me</span></button>
+  </Fragment>
+
+  <main>
+    <div id="map" role="application" aria-label="Map of public art in San José"></div>
+    <div class="map-bar">
+      <div id="count" aria-live="polite">Loading...</div>
+      {
+        present.length > 1 &&
+          present.map((c) => (
+            <button class="chip" type="button" data-category={c.key} aria-pressed="true" style={`--c:${c.color}`}>
+              <span class="dot" />
+              {c.label} ({c.count})
+            </button>
+          ))
+      }
+      <a class="chip" href="/photos-needed/">📷 Photos needed</a>
+    </div>
+  </main>
+
+  <script type="application/json" id="map-data" set:html={JSON.stringify({ items, ...config }).replace(/</g, '\\u003c')} />
+</Base>
+
+<script>
+  import { initMap } from '../scripts/map';
+  initMap();
+</script>

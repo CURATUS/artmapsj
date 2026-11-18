@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description = 'An interactive map of public art in San José: art boxes, murals, galleries and more.',
+  image,
+  bodyClass,
+} = Astro.props;
+
+const fullTitle = title ? `${title} · ArtMapSJ` : 'ArtMapSJ: Public Art in San José';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = image ? new URL(image, Astro.site).href : undefined;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class={bodyClass}>
+    <header id="header">
+      <a href="/" class="logo" aria-label="ArtMapSJ home"><h1>Art<span>Map</span>SJ</h1></a>
+      <slot name="header" />
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <slot name="footer">
+        <p>© {year} ArtMapSJ. All rights reserved.</p>
+      </slot>
+    </footer>
+  </body>
+</html>

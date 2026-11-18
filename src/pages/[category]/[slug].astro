@@ -1,0 +1,123 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { getArtworks, instagramUrl, googleMapsUrl, type Artwork } from '../../lib/artworks';
+import { categories, categoryOf, slugOf } from '../../data/categories';
+import { tiles } from '../../data/site';
+import { render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getArtworks({ includeRemoved: true });
+  return entries.map((entry) => ({
+    params: { category: categoryOf(entry.id), slug: slugOf(entry.id) },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props as { entry: Artwork };
+const d = entry.data;
+const cat = categories[categoryOf(entry.id)];
+const photos = [...(d.featured ? [d.featured] : []), ...d.photos];
+const [hero, ...rest] = photos;
+const og = hero ? await getImage({ src: hero.src, width: 1200, format: 'jpg' }) : null;
+const { Content } = await render(entry);
+const summary = [d.artist && `By ${d.artist}`, d.description].filter(Boolean).join('. ');
+---
+
+<Base title={d.title} description={summary || `${cat.label} in San José`} image={og?.src}>
+  <main class="page" style={`--c:${cat.color}`}>
+    <a class="back" href={`/?focus=${encodeURIComponent(entry.id)}`}>← View on map</a>
+
+    {
+      hero ? (
+        <figure class="hero">
+          <Image src={hero.src} alt={hero.alt ?? d.title} widths={[600, 900, 1400]} sizes="(max-width: 900px) 100vw, 880px" loading="eager" />
+          {hero.credit && (
+            <figcaption>
+              📷 {hero.credit.name}
+              {hero.credit.instagram && (
+                <>
+                  {' · '}
+                  <a href={instagramUrl(hero.credit.instagram)} target="_blank" rel="noopener">@{hero.credit.instagram}</a>
+                </>
+              )}
+            </figcaption>
+          )}
+        </figure>
+      ) : (
+        <div class="hero placeholder">
+          <span class="icon" aria-hidden="true">📷</span>
+          <strong>We don't have a photo of this one yet.</strong>
+          <span>Have one? <a href="/photos-needed/">Find out how to share it →</a></span>
+        </div>
+      )
+    }
+
+    <span class="tag">{cat.label}</span>
+    {d.status === 'removed' && <span class="tag" style="--c:#ef4444">No longer on view</span>}
+    <h2>{d.title}</h2>
+    {d.location && <p>{d.location}</p>}
+
+    <dl class="facts">
+      {d.artist && (<><dt>Artist</dt><dd>{d.artist}</dd></>)}
+      {d.sponsor && (<><dt>Sponsor</dt><dd>{d.sponsor}</dd></>)}
+      {d.neighborhood && (<><dt>Neighborhood</dt><dd>{d.neighborhood}</dd></>)}
+      {d.district && (<><dt>Council District</dt><dd>District {d.district}</dd></>)}
+    </dl>
+
+    {d.description && <p>{d.description}</p>}
+    <div class="body"><Content /></div>
+
+    {
+      rest.length > 0 && (
+        <>
+          <h3>More photos</h3>
+          <div class="gallery">
+            {rest.map((p) => (
+              <figure>
+                <Image src={p.src} alt={p.alt ?? d.title} width={600} />
+                {p.credit && (
+                  <figcaption>
+                    📷 {p.credit.name}
+                    {p.credit.instagram && (
+                      <>
+                        {' · '}
+                        <a href={instagramUrl(p.credit.instagram)} target="_blank" rel="noopener">@{p.credit.instagram}</a>
+                      </>
+                    )}
+                  </figcaption>
+                )}
+              </figure>
+            ))}
+          </div>
+        </>
+      )
+    }
+
+    <h3>Where to find it</h3>
+    <div id="mini-map" class="mini-map" data-lat={d.lat} data-lng={d.lng} data-color={cat.color} data-tiles={JSON.stringify(tiles)}></div>
+    <a href={googleMapsUrl(d.lat, d.lng)} target="_blank" rel="noopener">Open in Google Maps ↗</a>
+  </main>
+</Base>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+
+  const el = document.getElementById('mini-map');
+  if (el) {
+    const lat = Number(el.dataset.lat);
+    const lng = Number(el.dataset.lng);
+    const m = L.map(el, { scrollWheelZoom: false }).setView([lat, lng], 16);
+    const t = JSON.parse(el.dataset.tiles!);
+    L.tileLayer(t.url, { attribution: t.attribution, maxZoom: t.maxZoom }).addTo(m);
+    L.marker([lat, lng], {
+      icon: L.divIcon({
+        className: '',
+        html: `<div class="am-marker" style="--c:${el.dataset.color}"></div>`,
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+      }),
+    }).addTo(m);
+  }
+</script>
