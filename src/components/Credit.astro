@@ -1,0 +1,27 @@
+---
+import { instagramUrl } from '../lib/artworks';
+
+interface Props {
+  credit?: { name: string; instagram?: string; url?: string };
+}
+const { credit } = Astro.props;
+---
+
+{
+  credit && (
+    <figcaption>
+      📷{' '}
+      {credit.url ? (
+        <a href={credit.url} target="_blank" rel="noopener">{credit.name}</a>
+      ) : (
+        credit.name
+      )}
+      {credit.instagram && (
+        <>
+          {' · '}
+          <a href={instagramUrl(credit.instagram)} target="_blank" rel="noopener">@{credit.instagram}</a>
+        </>
+      )}
+    </figcaption>
+  )
+}

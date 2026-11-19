@@ -22,7 +22,10 @@ function photoBlock(d: MapItem, cat: Category) {
       const ig = c.instagram
         ? ` · <a href="https://www.instagram.com/${esc(c.instagram)}/" target="_blank" rel="noopener">@${esc(c.instagram)}</a>`
         : '';
-      credit = `<div class="popup-credit">📷 ${esc(c.name)}${ig}</div>`;
+      const name = c.url
+        ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.name)}</a>`
+        : esc(c.name);
+      credit = `<div class="popup-credit">📷 ${name}${ig}</div>`;
     }
     return `<div class="popup-media"><a href="${d.url}"><img src="${d.photo.src}" alt="${esc(d.photo.alt)}" width="280" height="180" loading="lazy"></a>${credit}</div>`;
   }

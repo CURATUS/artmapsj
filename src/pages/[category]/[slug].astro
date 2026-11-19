@@ -1,7 +1,8 @@
 ---
 import { Image, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import { getArtworks, instagramUrl, googleMapsUrl, type Artwork } from '../../lib/artworks';
+import Credit from '../../components/Credit.astro';
+import { getArtworks, googleMapsUrl, type Artwork } from '../../lib/artworks';
 import { categories, categoryOf, slugOf } from '../../data/categories';
 import { tiles } from '../../data/site';
 import { render } from 'astro:content';
@@ -32,17 +33,7 @@ const summary = [d.artist && `By ${d.artist}`, d.description].filter(Boolean).jo
       hero ? (
         <figure class="hero">
           <Image src={hero.src} alt={hero.alt ?? d.title} widths={[600, 900, 1400]} sizes="(max-width: 900px) 100vw, 880px" loading="eager" />
-          {hero.credit && (
-            <figcaption>
-              📷 {hero.credit.name}
-              {hero.credit.instagram && (
-                <>
-                  {' · '}
-                  <a href={instagramUrl(hero.credit.instagram)} target="_blank" rel="noopener">@{hero.credit.instagram}</a>
-                </>
-              )}
-            </figcaption>
-          )}
+          <Credit credit={hero.credit} />
         </figure>
       ) : (
         <div class="hero placeholder">
@@ -76,17 +67,7 @@ const summary = [d.artist && `By ${d.artist}`, d.description].filter(Boolean).jo
             {rest.map((p) => (
               <figure>
                 <Image src={p.src} alt={p.alt ?? d.title} width={600} />
-                {p.credit && (
-                  <figcaption>
-                    📷 {p.credit.name}
-                    {p.credit.instagram && (
-                      <>
-                        {' · '}
-                        <a href={instagramUrl(p.credit.instagram)} target="_blank" rel="noopener">@{p.credit.instagram}</a>
-                      </>
-                    )}
-                  </figcaption>
-                )}
+                <Credit credit={p.credit} />
               </figure>
             ))}
           </div>

@@ -5,9 +5,10 @@ sponsor: "Anonymous"
 description: "Entrance to Japantown!"
 lat: 37.347149
 lng: -121.898396
-# featured:
-#   src: ./n-first-st-jackson.jpg
-#   credit:
-#     name: "Photographer Name"
-#     instagram: "handle"
+featured:
+  src: ./n-first-st-jackson.jpg
+  alt: "Origami-style art box at N First and Jackson, the entrance to Japantown"
+  credit:
+    name: "Josh Brotheim"
+    url: "https://www.flickr.com/photos/jbrotheim/16613023089/"
 ---
