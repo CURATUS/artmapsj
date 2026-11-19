@@ -2,7 +2,7 @@
 import { Image, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import Credit from '../../components/Credit.astro';
-import { getArtworks, googleMapsUrl, type Artwork } from '../../lib/artworks';
+import { getArtworks, googleMapsUrl, photosOf, type Artwork } from '../../lib/artworks';
 import { categories, categoryOf, slugOf } from '../../data/categories';
 import { tiles } from '../../data/site';
 import { render } from 'astro:content';
@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props as { entry: Artwork };
 const d = entry.data;
 const cat = categories[categoryOf(entry.id)];
-const photos = [...(d.featured ? [d.featured] : []), ...d.photos];
+const photos = photosOf(entry);
 const [hero, ...rest] = photos;
 const og = hero ? await getImage({ src: hero.src, width: 1200, format: 'jpg' }) : null;
 const { Content } = await render(entry);

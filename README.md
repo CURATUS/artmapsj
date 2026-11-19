@@ -33,6 +33,7 @@ featured:                             # optional, the main photo shown in the po
   credit:
     name: "Jane Doe"
     instagram: "janedoe"              # no @
+    url: "https://..."                # optional link for the name (e.g. Flickr page)
 photos:                               # optional, extra photos for the artwork's page
   - src: ./park-ave-race-st-2.jpg
     credit:
@@ -42,6 +43,9 @@ photos:                               # optional, extra photos for the artwork's
 
 - **Photos:** upload the full-size original (JPG or PNG) next to the `.md` file. The build makes small, fast versions
   automatically and strips hidden data such as GPS location. No need to resize first.
+- **Permission pending:** add `permissionPending: true` to a photo we don't have the photographer's OK for yet.
+  It shows on preview builds (any branch except `main`) and is hidden on the live site automatically. Delete the line
+  once permission comes in. The build log prints how many pending photos were shown or hidden.
 - **Removed or destroyed art:** add `status: removed`. It disappears from the map, but its page stays up, marked
   "No longer on view".
 - **Mistakes are caught for you:** a missing title, coordinates outside San José, a bad Instagram handle, a photo path

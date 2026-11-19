@@ -22,6 +22,9 @@ const artworks = defineCollection({
       src: image(),
       alt: z.string().optional(),
       credit: credit.optional(),
+      // true = we haven't got the photographer's OK yet. Shown on preview builds only,
+      // hidden on the live site (see src/data/site.ts).
+      permissionPending: z.boolean().default(false),
     });
 
     return z.object({

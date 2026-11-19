@@ -7,8 +7,9 @@ lat: 37.348104
 lng: -121.895585
 featured:
   src: ./4th-street-jackson.jpg
-  alt: "Art box at 4th and Jackson painted with a red daruma doll and waves"
+  alt: "Art box at 4th Street/Jackson"
   credit:
     name: "Josh Brotheim"
     url: "https://www.flickr.com/photos/jbrotheim/16611776120/"
+  permissionPending: true
 ---

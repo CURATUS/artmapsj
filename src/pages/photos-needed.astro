@@ -1,10 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getArtworks, artworkUrl } from '../lib/artworks';
+import { getArtworks, artworkUrl, photosOf } from '../lib/artworks';
 import { categories, categoryOf } from '../data/categories';
 
 const all = await getArtworks();
-const missing = all.filter((e) => !e.data.featured);
+const missing = all.filter((e) => photosOf(e).length === 0);
 const done = all.length - missing.length;
 
 const groups = Object.entries(categories)
